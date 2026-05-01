@@ -53,6 +53,15 @@
           8px -8px,
           -8px 0;
       }
+      /* RTL support — flips list bullets and align */
+      html[dir="rtl"] .list-decimal {
+        padding-right: 1.25rem;
+        padding-left: 0;
+      }
+      html[dir="rtl"] #langMenu {
+        left: 0;
+        right: auto;
+      }
     </style>
   </head>
   <body
@@ -77,10 +86,15 @@
             <h1
               class="text-xl font-semibold leading-tight"
               style="color: var(--wmf-text)"
+              data-i18n="header.title"
             >
               Commons SVG Sanitizer
             </h1>
-            <div class="text-xs mono" style="color: var(--wmf-text-muted)">
+            <div
+              class="text-xs mono"
+              style="color: var(--wmf-text-muted)"
+              data-i18n="header.subtitle"
+            >
               SVG validator for Wikimedia Commons uploads
             </div>
           </div>
@@ -90,17 +104,122 @@
             href="#guide"
             class="hover:underline"
             style="color: var(--wmf-blue)"
+            data-i18n="nav.guide"
             >Guide</a
           >
           <a
             href="#about"
             class="hover:underline"
             style="color: var(--wmf-blue)"
+            data-i18n="nav.about"
             >About</a
           >
-          <a href="#repo" class="hover:underline" style="color: var(--wmf-blue)"
+          <a
+            href="#repo"
+            class="hover:underline"
+            style="color: var(--wmf-blue)"
+            data-i18n="nav.source"
             >Source</a
           >
+
+          <div class="relative">
+            <button
+              id="langBtn"
+              class="flex items-center gap-1.5 px-2.5 py-1.5 rounded border bg-white hover:bg-gray-50 transition"
+              style="
+                border-color: var(--wmf-border-soft);
+                color: var(--wmf-text);
+              "
+              aria-label="Select language"
+            >
+              <svg
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <circle cx="12" cy="12" r="10" />
+                <line x1="2" y1="12" x2="22" y2="12" />
+                <path
+                  d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"
+                />
+              </svg>
+              <span id="langLabel" class="text-xs">English</span>
+              <svg
+                width="10"
+                height="10"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <polyline points="6 9 12 15 18 9" />
+              </svg>
+            </button>
+            <ul
+              id="langMenu"
+              class="hidden absolute right-0 mt-1 w-40 rounded border bg-white shadow-md z-20 py-1"
+              style="border-color: var(--wmf-border-soft)"
+            >
+              <li>
+                <button
+                  data-lang="en"
+                  class="lang-opt w-full text-left px-3 py-1.5 text-sm hover:bg-gray-50"
+                >
+                  English
+                </button>
+              </li>
+              <li>
+                <button
+                  data-lang="hi"
+                  class="lang-opt w-full text-left px-3 py-1.5 text-sm hover:bg-gray-50"
+                >
+                  हिन्दी
+                </button>
+              </li>
+              <li>
+                <button
+                  data-lang="ar"
+                  dir="rtl"
+                  class="lang-opt w-full text-right px-3 py-1.5 text-sm hover:bg-gray-50"
+                >
+                  العربية
+                </button>
+              </li>
+              <li>
+                <button
+                  data-lang="fr"
+                  class="lang-opt w-full text-left px-3 py-1.5 text-sm hover:bg-gray-50"
+                >
+                  Français
+                </button>
+              </li>
+              <li>
+                <button
+                  data-lang="es"
+                  class="lang-opt w-full text-left px-3 py-1.5 text-sm hover:bg-gray-50"
+                >
+                  Español
+                </button>
+              </li>
+              <li>
+                <button
+                  data-lang="de"
+                  class="lang-opt w-full text-left px-3 py-1.5 text-sm hover:bg-gray-50"
+                >
+                  Deutsch
+                </button>
+              </li>
+            </ul>
+          </div>
         </nav>
       </div>
     </header>
@@ -108,12 +227,17 @@
     <main class="max-w-6xl mx-auto px-6 py-8">
       <!-- ─── INTRO ─────────────────────────────────────────────── -->
       <section class="mb-8">
-        <h2 class="text-2xl font-semibold mb-2" style="color: var(--wmf-text)">
+        <h2
+          class="text-2xl font-semibold mb-2"
+          style="color: var(--wmf-text)"
+          data-i18n="intro.title"
+        >
           Validate SVG files before uploading to Commons
         </h2>
         <p
           class="text-base leading-relaxed"
           style="color: var(--wmf-text-muted); max-width: 70ch"
+          data-i18n="intro.body"
         >
           MediaWiki strips disallowed elements, attributes, and unsafe URLs from
           every SVG uploaded to Wikimedia Commons. This tool reports what would
@@ -145,13 +269,21 @@
             <polyline points="17 8 12 3 7 8" />
             <line x1="12" y1="3" x2="12" y2="15" />
           </svg>
-          <p class="text-base" style="color: var(--wmf-text)">
+          <p
+            class="text-base"
+            style="color: var(--wmf-text)"
+            data-i18n-html="dropzone.main"
+          >
             Drop an <span class="mono">.svg</span> file here, or
             <span class="font-medium" style="color: var(--wmf-blue)"
               >click to choose</span
             >
           </p>
-          <p class="text-xs mt-2" style="color: var(--wmf-text-muted)">
+          <p
+            class="text-xs mt-2"
+            style="color: var(--wmf-text-muted)"
+            data-i18n="dropzone.note"
+          >
             10 MB maximum · processed in memory only
           </p>
           <input
@@ -165,6 +297,7 @@
         <div class="mt-3 flex flex-wrap gap-2">
           <button
             data-sample="clean"
+            data-i18n="samples.clean"
             class="sample-btn text-xs px-3 py-1.5 rounded border bg-white hover:bg-gray-50"
             style="border-color: var(--wmf-border-soft); color: var(--wmf-blue)"
           >
@@ -172,6 +305,7 @@
           </button>
           <button
             data-sample="malicious"
+            data-i18n="samples.malicious"
             class="sample-btn text-xs px-3 py-1.5 rounded border bg-white hover:bg-gray-50"
             style="border-color: var(--wmf-border-soft); color: var(--wmf-blue)"
           >
@@ -179,6 +313,7 @@
           </button>
           <button
             data-sample="mixed"
+            data-i18n="samples.mixed"
             class="sample-btn text-xs px-3 py-1.5 rounded border bg-white hover:bg-gray-50"
             style="border-color: var(--wmf-border-soft); color: var(--wmf-blue)"
           >
@@ -195,13 +330,11 @@
 
       <!-- ─── RESULT (hidden until upload) ──────────────────────── -->
       <section id="result" class="hidden">
-        <!-- Stats strip -->
         <div
           id="stats"
           class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-5"
         ></div>
 
-        <!-- Side-by-side preview -->
         <div id="preview-row" class="grid md:grid-cols-2 gap-4 mb-5 hidden">
           <div
             class="bg-white rounded-md border"
@@ -213,6 +346,7 @@
                 border-color: var(--wmf-border-soft);
                 color: var(--wmf-text-muted);
               "
+              data-i18n="result.original"
             >
               Original
             </div>
@@ -238,11 +372,12 @@
                 color: var(--wmf-text-muted);
               "
             >
-              <span>Cleaned</span>
+              <span data-i18n="result.cleaned">Cleaned</span>
               <button
                 id="downloadBtn"
                 class="hidden text-xs font-medium px-3 py-1 rounded text-white"
                 style="background: var(--wmf-blue)"
+                data-i18n="result.download"
               >
                 Download
               </button>
@@ -260,7 +395,6 @@
           </div>
         </div>
 
-        <!-- Issues -->
         <div
           class="bg-white rounded-md border"
           style="border-color: var(--wmf-border-soft)"
@@ -268,6 +402,7 @@
           <div
             class="px-5 py-3 border-b font-medium"
             style="border-color: var(--wmf-border-soft)"
+            data-i18n="result.findings"
           >
             Findings
           </div>
@@ -281,18 +416,22 @@
 
       <!-- ─── HOW TO USE ─────────────────────────────────────────── -->
       <section id="guide" class="mt-12">
-        <h2 class="text-xl font-semibold mb-3" style="color: var(--wmf-text)">
+        <h2
+          class="text-xl font-semibold mb-3"
+          style="color: var(--wmf-text)"
+          data-i18n="howto.title"
+        >
           How to use
         </h2>
         <ol
           class="list-decimal pl-5 space-y-2 text-sm leading-relaxed"
           style="color: var(--wmf-text)"
         >
-          <li>
+          <li data-i18n-html="howto.s1">
             Drop or choose an <span class="mono">.svg</span> file (or load a
             sample above to try the tool).
           </li>
-          <li>
+          <li data-i18n-html="howto.s2">
             Review the <strong>Findings</strong> list. Items marked
             <span
               class="px-1.5 py-0.5 rounded text-xs font-medium"
@@ -308,11 +447,11 @@
             items are usually editor-specific elements (e.g. Inkscape) that
             won't render.
           </li>
-          <li>
+          <li data-i18n="howto.s3">
             Use the side-by-side preview to confirm the cleaned version still
             looks correct.
           </li>
-          <li>
+          <li data-i18n-html="howto.s4">
             Click <strong>Download</strong> and upload the cleaned file to
             <a
               class="underline"
@@ -328,12 +467,17 @@
 
       <!-- ─── COMMONS SVG GUIDELINES ────────────────────────────── -->
       <section class="mt-10">
-        <h2 class="text-xl font-semibold mb-3" style="color: var(--wmf-text)">
+        <h2
+          class="text-xl font-semibold mb-3"
+          style="color: var(--wmf-text)"
+          data-i18n="guidelines.title"
+        >
           Commons SVG guidelines
         </h2>
         <p
           class="text-sm mb-4"
           style="color: var(--wmf-text-muted); max-width: 70ch"
+          data-i18n-html="guidelines.summary"
         >
           Summarised from
           <a
@@ -367,8 +511,14 @@
             class="bg-white rounded-md border p-4"
             style="border-color: var(--wmf-border-soft)"
           >
-            <h3 class="font-medium mb-1">Root must be &lt;svg&gt;</h3>
-            <p class="text-sm" style="color: var(--wmf-text-muted)">
+            <h3 class="font-medium mb-1" data-i18n-html="rule1.title">
+              Root must be &lt;svg&gt;
+            </h3>
+            <p
+              class="text-sm"
+              style="color: var(--wmf-text-muted)"
+              data-i18n-html="rule1.body"
+            >
               The root element must be <span class="mono">&lt;svg&gt;</span>.
               Standalone XML other than SVG is rejected.
             </p>
@@ -377,8 +527,14 @@
             class="bg-white rounded-md border p-4"
             style="border-color: var(--wmf-border-soft)"
           >
-            <h3 class="font-medium mb-1">No scripts or interactive content</h3>
-            <p class="text-sm" style="color: var(--wmf-text-muted)">
+            <h3 class="font-medium mb-1" data-i18n="rule2.title">
+              No scripts or interactive content
+            </h3>
+            <p
+              class="text-sm"
+              style="color: var(--wmf-text-muted)"
+              data-i18n-html="rule2.body"
+            >
               <span class="mono">&lt;script&gt;</span>,
               <span class="mono">&lt;foreignObject&gt;</span>,
               <span class="mono">&lt;iframe&gt;</span>, and event handlers
@@ -391,8 +547,14 @@
             class="bg-white rounded-md border p-4"
             style="border-color: var(--wmf-border-soft)"
           >
-            <h3 class="font-medium mb-1">URLs must be safe</h3>
-            <p class="text-sm" style="color: var(--wmf-text-muted)">
+            <h3 class="font-medium mb-1" data-i18n="rule3.title">
+              URLs must be safe
+            </h3>
+            <p
+              class="text-sm"
+              style="color: var(--wmf-text-muted)"
+              data-i18n-html="rule3.body"
+            >
               <span class="mono">href</span> values may only point to
               <span class="mono">#</span>, <span class="mono">https://</span>,
               or <span class="mono">http://</span>.
@@ -404,8 +566,14 @@
             class="bg-white rounded-md border p-4"
             style="border-color: var(--wmf-border-soft)"
           >
-            <h3 class="font-medium mb-1">Allowed namespaces only</h3>
-            <p class="text-sm" style="color: var(--wmf-text-muted)">
+            <h3 class="font-medium mb-1" data-i18n="rule4.title">
+              Allowed namespaces only
+            </h3>
+            <p
+              class="text-sm"
+              style="color: var(--wmf-text-muted)"
+              data-i18n="rule4.body"
+            >
               MediaWiki accepts SVG, Inkscape, Adobe, Creative Commons, and W3C
               RDF namespaces. XHTML inside an SVG is rejected.
             </p>
@@ -414,8 +582,14 @@
             class="bg-white rounded-md border p-4"
             style="border-color: var(--wmf-border-soft)"
           >
-            <h3 class="font-medium mb-1">Use librsvg-friendly fonts</h3>
-            <p class="text-sm" style="color: var(--wmf-text-muted)">
+            <h3 class="font-medium mb-1" data-i18n="rule5.title">
+              Use librsvg-friendly fonts
+            </h3>
+            <p
+              class="text-sm"
+              style="color: var(--wmf-text-muted)"
+              data-i18n-html="rule5.body"
+            >
               Commons renders SVGs with librsvg, which only has a limited font
               list. Prefer
               <span class="mono">'Liberation Sans', Arial, sans-serif</span> and
@@ -426,8 +600,14 @@
             class="bg-white rounded-md border p-4"
             style="border-color: var(--wmf-border-soft)"
           >
-            <h3 class="font-medium mb-1">Validate before uploading</h3>
-            <p class="text-sm" style="color: var(--wmf-text-muted)">
+            <h3 class="font-medium mb-1" data-i18n="rule6.title">
+              Validate before uploading
+            </h3>
+            <p
+              class="text-sm"
+              style="color: var(--wmf-text-muted)"
+              data-i18n-html="rule6.body"
+            >
               A well-formed SVG renders consistently. Beyond this tool you can
               also use the
               <a
@@ -445,7 +625,11 @@
 
       <!-- ─── ABOUT ─────────────────────────────────────────────── -->
       <section id="about" class="mt-12">
-        <h2 class="text-xl font-semibold mb-3" style="color: var(--wmf-text)">
+        <h2
+          class="text-xl font-semibold mb-3"
+          style="color: var(--wmf-text)"
+          data-i18n="about.title"
+        >
           About this tool
         </h2>
         <div
@@ -454,7 +638,11 @@
         >
           <dl class="grid sm:grid-cols-2 gap-x-8 gap-y-3 text-sm">
             <div>
-              <dt class="font-medium" style="color: var(--wmf-text)">
+              <dt
+                class="font-medium"
+                style="color: var(--wmf-text)"
+                data-i18n="about.maintainer"
+              >
                 Maintainer
               </dt>
               <dd class="mono" style="color: var(--wmf-text-muted)">
@@ -470,11 +658,14 @@
               </dd>
             </div>
             <div>
-              <dt class="font-medium" style="color: var(--wmf-text)">
+              <dt
+                class="font-medium"
+                style="color: var(--wmf-text)"
+                data-i18n="about.phab"
+              >
                 Phabricator
               </dt>
               <dd class="mono" style="color: var(--wmf-text-muted)">
-                <!-- TODO: replace with your real Phab user URL -->
                 <a
                   class="underline"
                   style="color: var(--wmf-blue)"
@@ -487,11 +678,14 @@
               </dd>
             </div>
             <div id="repo">
-              <dt class="font-medium" style="color: var(--wmf-text)">
+              <dt
+                class="font-medium"
+                style="color: var(--wmf-text)"
+                data-i18n="about.source"
+              >
                 Source code
               </dt>
               <dd class="mono" style="color: var(--wmf-text-muted)">
-                <!-- TODO: replace with your real GitHub repo -->
                 <a
                   class="underline"
                   style="color: var(--wmf-blue)"
@@ -504,22 +698,39 @@
               </dd>
             </div>
             <div>
-              <dt class="font-medium" style="color: var(--wmf-text)">
+              <dt
+                class="font-medium"
+                style="color: var(--wmf-text)"
+                data-i18n="about.license"
+              >
                 License
               </dt>
               <dd class="mono" style="color: var(--wmf-text-muted)">MIT</dd>
             </div>
             <div>
-              <dt class="font-medium" style="color: var(--wmf-text)">Stack</dt>
+              <dt
+                class="font-medium"
+                style="color: var(--wmf-text)"
+                data-i18n="about.stack"
+              >
+                Stack
+              </dt>
               <dd style="color: var(--wmf-text-muted)">
                 Flask · lxml · defusedxml · Tailwind
               </dd>
             </div>
             <div>
-              <dt class="font-medium" style="color: var(--wmf-text)">
+              <dt
+                class="font-medium"
+                style="color: var(--wmf-text)"
+                data-i18n="about.privacy"
+              >
                 Privacy
               </dt>
-              <dd style="color: var(--wmf-text-muted)">
+              <dd
+                style="color: var(--wmf-text-muted)"
+                data-i18n="about.privacyValue"
+              >
                 No file is written to disk. No analytics. No login.
               </dd>
             </div>
@@ -586,7 +797,6 @@
               title="Content licensed CC BY-SA 4.0"
               class="flex items-center gap-1.5 opacity-70 hover:opacity-100 transition"
             >
-              <!-- CC icon -->
               <svg
                 width="18"
                 height="18"
@@ -606,11 +816,13 @@
               <span class="mono">CC BY-SA 4.0</span>
             </a>
             <span style="color: var(--wmf-border)">·</span>
-            <span>Code: <span class="mono">MIT</span></span>
+            <span data-i18n-html="footer.codeLicense"
+              >Code: <span class="mono">MIT</span></span
+            >
           </div>
         </div>
 
-        <div class="mt-4 leading-relaxed">
+        <div class="mt-4 leading-relaxed" data-i18n-html="footer.attribution">
           Content on this page is available under the
           <a
             href="https://creativecommons.org/licenses/by-sa/4.0/"
@@ -629,6 +841,520 @@
 
     <!-- ─── SCRIPT ─────────────────────────────────────────────── -->
     <script>
+      // ═══════════════════════════════════════════════════════════
+      // I18N — translation dictionary
+      // ═══════════════════════════════════════════════════════════
+      const I18N = {
+        en: {
+          _label: "English",
+          _dir: "ltr",
+          "header.title": "Commons SVG Sanitizer",
+          "header.subtitle": "SVG validator for Wikimedia Commons uploads",
+          "nav.guide": "Guide",
+          "nav.about": "About",
+          "nav.source": "Source",
+          "intro.title": "Validate SVG files before uploading to Commons",
+          "intro.body":
+            "MediaWiki strips disallowed elements, attributes, and unsafe URLs from every SVG uploaded to Wikimedia Commons. This tool reports what would be removed and gives you a clean copy you can upload directly. Files are processed in memory and never stored on the server.",
+          "dropzone.main":
+            'Drop an <span class="mono">.svg</span> file here, or <span class="font-medium" style="color: var(--wmf-blue)">click to choose</span>',
+          "dropzone.note": "10 MB maximum · processed in memory only",
+          "samples.clean": "Try clean sample",
+          "samples.malicious": "Try malicious sample",
+          "samples.mixed": "Try mixed sample",
+          "result.original": "Original",
+          "result.cleaned": "Cleaned",
+          "result.download": "Download",
+          "result.findings": "Findings",
+          "result.nothingFlagged":
+            "Nothing flagged. This SVG passes the Commons sanitiser cleanly.",
+          "result.parseFailed": "Parse failed",
+          "result.statusLabel": "Status",
+          "result.fileLabel": "File",
+          "result.originalSize": "Original size",
+          "result.cleanedSize": "Cleaned size",
+          "result.blockers": "Blockers",
+          "result.warnings": "Warnings",
+          "result.blocker": "Blocker",
+          "result.warning": "Warning",
+          "result.sanitising": "Sanitising",
+          "result.error": "Error",
+          "result.networkError": "Network error",
+          "howto.title": "How to use",
+          "howto.s1":
+            'Drop or choose an <span class="mono">.svg</span> file (or load a sample above to try the tool).',
+          "howto.s2":
+            'Review the <strong>Findings</strong> list. Items marked <span class="px-1.5 py-0.5 rounded text-xs font-medium" style="background:#fee;color:var(--wmf-error)">Blocker</span> will be stripped or rejected by Commons. <span class="px-1.5 py-0.5 rounded text-xs font-medium" style="background:#fef6e7;color:var(--wmf-warning)">Warning</span> items are usually editor-specific elements (e.g. Inkscape) that won\'t render.',
+          "howto.s3":
+            "Use the side-by-side preview to confirm the cleaned version still looks correct.",
+          "howto.s4":
+            'Click <strong>Download</strong> and upload the cleaned file to <a class="underline" style="color:var(--wmf-blue)" target="_blank" rel="noopener" href="https://commons.wikimedia.org/wiki/Special:Upload">Special:Upload</a>.',
+          "guidelines.title": "Commons SVG guidelines",
+          "guidelines.summary":
+            'Summarised from <a class="underline" style="color:var(--wmf-blue)" target="_blank" rel="noopener" href="https://commons.wikimedia.org/wiki/Help:SVG">Help:SVG</a>, <a class="underline" style="color:var(--wmf-blue)" target="_blank" rel="noopener" href="https://commons.wikimedia.org/wiki/Help:SVG_guidelines">Help:SVG guidelines</a>, and <a class="underline" style="color:var(--wmf-blue)" target="_blank" rel="noopener" href="https://commons.wikimedia.org/wiki/Commons:Transition_to_SVG">Commons:Transition to SVG</a>. Refer to the originals for the full text.',
+          "rule1.title": "Root must be &lt;svg&gt;",
+          "rule1.body":
+            'The root element must be <span class="mono">&lt;svg&gt;</span>. Standalone XML other than SVG is rejected.',
+          "rule2.title": "No scripts or interactive content",
+          "rule2.body":
+            '<span class="mono">&lt;script&gt;</span>, <span class="mono">&lt;foreignObject&gt;</span>, <span class="mono">&lt;iframe&gt;</span>, and event handlers (<span class="mono">onclick</span>, <span class="mono">onload</span>, …) are stripped during sanitisation.',
+          "rule3.title": "URLs must be safe",
+          "rule3.body":
+            '<span class="mono">href</span> values may only point to <span class="mono">#</span>, <span class="mono">https://</span>, or <span class="mono">http://</span>. <span class="mono">javascript:</span> and other schemes are rejected.',
+          "rule4.title": "Allowed namespaces only",
+          "rule4.body":
+            "MediaWiki accepts SVG, Inkscape, Adobe, Creative Commons, and W3C RDF namespaces. XHTML inside an SVG is rejected.",
+          "rule5.title": "Use librsvg-friendly fonts",
+          "rule5.body":
+            'Commons renders SVGs with librsvg, which only has a limited font list. Prefer <span class="mono">\'Liberation Sans\', Arial, sans-serif</span> and avoid Inkscape "flowed text".',
+          "rule6.title": "Validate before uploading",
+          "rule6.body":
+            'A well-formed SVG renders consistently. Beyond this tool you can also use the <a class="underline" style="color:var(--wmf-blue)" target="_blank" rel="noopener" href="https://validator.w3.org/">W3C Markup Validator</a>.',
+          "about.title": "About this tool",
+          "about.maintainer": "Maintainer",
+          "about.phab": "Phabricator",
+          "about.source": "Source code",
+          "about.license": "License",
+          "about.stack": "Stack",
+          "about.privacy": "Privacy",
+          "about.privacyValue":
+            "No file is written to disk. No analytics. No login.",
+          "footer.codeLicense": 'Code: <span class="mono">MIT</span>',
+          "footer.attribution":
+            'Content on this page is available under the <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener" class="underline" style="color:var(--wmf-blue)">Creative Commons Attribution-ShareAlike 4.0 License</a>; additional terms may apply. Wikimedia project logos are trademarks of the Wikimedia Foundation and are used here for identification only — this tool is not endorsed by or affiliated with the Wikimedia Foundation.',
+        },
+
+        hi: {
+          _label: "हिन्दी",
+          _dir: "ltr",
+          "header.title": "कॉमन्स SVG सैनिटाइज़र",
+          "header.subtitle": "विकिमीडिया कॉमन्स अपलोड के लिए SVG वैलिडेटर",
+          "nav.guide": "मार्गदर्शिका",
+          "nav.about": "बारे में",
+          "nav.source": "स्रोत",
+          "intro.title": "कॉमन्स पर अपलोड करने से पहले SVG फ़ाइलें जाँचें",
+          "intro.body":
+            "मीडियाविकि विकिमीडिया कॉमन्स पर अपलोड किए गए हर SVG से अनुमति न प्राप्त तत्व, गुण और असुरक्षित URL हटा देता है। यह उपकरण बताता है कि क्या हटाया जाएगा और आपको साफ प्रति देता है जिसे आप सीधे अपलोड कर सकते हैं। फ़ाइलें मेमोरी में संसाधित होती हैं और सर्वर पर कभी सहेजी नहीं जातीं।",
+          "dropzone.main":
+            '<span class="mono">.svg</span> फ़ाइल यहाँ छोड़ें, या <span class="font-medium" style="color: var(--wmf-blue)">चुनने के लिए क्लिक करें</span>',
+          "dropzone.note": "अधिकतम 10 MB · केवल मेमोरी में संसाधित",
+          "samples.clean": "स्वच्छ नमूना आज़माएँ",
+          "samples.malicious": "दुर्भावनापूर्ण नमूना आज़माएँ",
+          "samples.mixed": "मिश्रित नमूना आज़माएँ",
+          "result.original": "मूल",
+          "result.cleaned": "साफ़",
+          "result.download": "डाउनलोड",
+          "result.findings": "निष्कर्ष",
+          "result.nothingFlagged":
+            "कुछ भी चिह्नित नहीं। यह SVG कॉमन्स सैनिटाइज़र को साफ़-साफ़ पास करता है।",
+          "result.parseFailed": "पार्स विफल",
+          "result.statusLabel": "स्थिति",
+          "result.fileLabel": "फ़ाइल",
+          "result.originalSize": "मूल आकार",
+          "result.cleanedSize": "साफ़ आकार",
+          "result.blockers": "अवरोधक",
+          "result.warnings": "चेतावनियाँ",
+          "result.blocker": "अवरोधक",
+          "result.warning": "चेतावनी",
+          "result.sanitising": "सैनिटाइज़ हो रहा है",
+          "result.error": "त्रुटि",
+          "result.networkError": "नेटवर्क त्रुटि",
+          "howto.title": "उपयोग कैसे करें",
+          "howto.s1":
+            '<span class="mono">.svg</span> फ़ाइल छोड़ें या चुनें (या ऊपर का नमूना लोड करें)।',
+          "howto.s2":
+            '<strong>निष्कर्ष</strong> सूची की समीक्षा करें। <span class="px-1.5 py-0.5 rounded text-xs font-medium" style="background:#fee;color:var(--wmf-error)">अवरोधक</span> वाली वस्तुएँ कॉमन्स द्वारा हटा दी जाएँगी। <span class="px-1.5 py-0.5 rounded text-xs font-medium" style="background:#fef6e7;color:var(--wmf-warning)">चेतावनी</span> वाली वस्तुएँ अक्सर संपादक-विशिष्ट तत्व (जैसे Inkscape) होती हैं जो रेंडर नहीं होंगी।',
+          "howto.s3":
+            "साथ-साथ पूर्वावलोकन का उपयोग करके पुष्टि करें कि साफ़ संस्करण सही दिखता है।",
+          "howto.s4":
+            'साफ़ फ़ाइल को <a class="underline" style="color:var(--wmf-blue)" target="_blank" rel="noopener" href="https://commons.wikimedia.org/wiki/Special:Upload">Special:Upload</a> पर अपलोड करने के लिए <strong>डाउनलोड</strong> पर क्लिक करें।',
+          "guidelines.title": "कॉमन्स SVG दिशानिर्देश",
+          "guidelines.summary":
+            '<a class="underline" style="color:var(--wmf-blue)" target="_blank" rel="noopener" href="https://commons.wikimedia.org/wiki/Help:SVG">Help:SVG</a>, <a class="underline" style="color:var(--wmf-blue)" target="_blank" rel="noopener" href="https://commons.wikimedia.org/wiki/Help:SVG_guidelines">Help:SVG guidelines</a>, और <a class="underline" style="color:var(--wmf-blue)" target="_blank" rel="noopener" href="https://commons.wikimedia.org/wiki/Commons:Transition_to_SVG">Commons:Transition to SVG</a> से सारांश। पूरे पाठ के लिए मूल दस्तावेज़ देखें।',
+          "rule1.title": "रूट &lt;svg&gt; होना चाहिए",
+          "rule1.body":
+            'रूट तत्व <span class="mono">&lt;svg&gt;</span> होना चाहिए। SVG के अलावा अन्य XML अस्वीकृत है।',
+          "rule2.title": "कोई स्क्रिप्ट या इंटरैक्टिव सामग्री नहीं",
+          "rule2.body":
+            '<span class="mono">&lt;script&gt;</span>, <span class="mono">&lt;foreignObject&gt;</span>, <span class="mono">&lt;iframe&gt;</span>, और इवेंट हैंडलर (<span class="mono">onclick</span>, <span class="mono">onload</span>, …) सैनिटाइज़ेशन के दौरान हटा दिए जाते हैं।',
+          "rule3.title": "URL सुरक्षित होने चाहिए",
+          "rule3.body":
+            '<span class="mono">href</span> मान केवल <span class="mono">#</span>, <span class="mono">https://</span>, या <span class="mono">http://</span> की ओर इंगित कर सकते हैं। <span class="mono">javascript:</span> और अन्य स्कीम अस्वीकृत हैं।',
+          "rule4.title": "केवल अनुमत नेमस्पेस",
+          "rule4.body":
+            "मीडियाविकि SVG, Inkscape, Adobe, Creative Commons, और W3C RDF नेमस्पेस स्वीकार करता है। SVG के भीतर XHTML अस्वीकृत है।",
+          "rule5.title": "librsvg-अनुकूल फ़ॉन्ट का उपयोग करें",
+          "rule5.body":
+            'कॉमन्स librsvg से SVG रेंडर करता है, जिसकी फ़ॉन्ट सूची सीमित है। <span class="mono">\'Liberation Sans\', Arial, sans-serif</span> को प्राथमिकता दें और Inkscape "flowed text" से बचें।',
+          "rule6.title": "अपलोड से पहले सत्यापित करें",
+          "rule6.body":
+            'एक सही ढंग से बना SVG लगातार रेंडर होता है। इस उपकरण के अलावा आप <a class="underline" style="color:var(--wmf-blue)" target="_blank" rel="noopener" href="https://validator.w3.org/">W3C Markup Validator</a> का भी उपयोग कर सकते हैं।',
+          "about.title": "इस उपकरण के बारे में",
+          "about.maintainer": "रखरखावकर्ता",
+          "about.phab": "Phabricator",
+          "about.source": "स्रोत कोड",
+          "about.license": "लाइसेंस",
+          "about.stack": "स्टैक",
+          "about.privacy": "गोपनीयता",
+          "about.privacyValue":
+            "कोई फ़ाइल डिस्क पर नहीं लिखी जाती। कोई एनालिटिक्स नहीं। कोई लॉगिन नहीं।",
+          "footer.codeLicense": 'कोड: <span class="mono">MIT</span>',
+          "footer.attribution":
+            'इस पृष्ठ की सामग्री <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener" class="underline" style="color:var(--wmf-blue)">Creative Commons Attribution-ShareAlike 4.0 लाइसेंस</a> के तहत उपलब्ध है; अतिरिक्त शर्तें लागू हो सकती हैं। विकिमीडिया प्रोजेक्ट लोगो विकिमीडिया फ़ाउंडेशन के ट्रेडमार्क हैं और यहाँ केवल पहचान के लिए उपयोग किए गए हैं — यह उपकरण विकिमीडिया फ़ाउंडेशन द्वारा समर्थित या संबद्ध नहीं है।',
+        },
+
+        ar: {
+          _label: "العربية",
+          _dir: "rtl",
+          "header.title": "منقّي SVG لكومنز",
+          "header.subtitle": "مدقق SVG لتحميلات ويكيميديا كومنز",
+          "nav.guide": "الدليل",
+          "nav.about": "حول",
+          "nav.source": "المصدر",
+          "intro.title": "تحقق من ملفات SVG قبل رفعها إلى كومنز",
+          "intro.body":
+            "تزيل ميدياويكي العناصر والسمات وعناوين URL غير الآمنة من كل SVG يُرفع إلى ويكيميديا كومنز. تعرض هذه الأداة ما سيُحذف وتقدم لك نسخة نظيفة يمكنك رفعها مباشرة. تُعالج الملفات في الذاكرة ولا تُخزَّن أبداً على الخادم.",
+          "dropzone.main":
+            'أفلِت ملف <span class="mono">.svg</span> هنا، أو <span class="font-medium" style="color: var(--wmf-blue)">انقر للاختيار</span>',
+          "dropzone.note": "حد أقصى 10 ميغابايت · معالجة في الذاكرة فقط",
+          "samples.clean": "جرّب عينة نظيفة",
+          "samples.malicious": "جرّب عينة خبيثة",
+          "samples.mixed": "جرّب عينة مختلطة",
+          "result.original": "الأصلي",
+          "result.cleaned": "النظيف",
+          "result.download": "تنزيل",
+          "result.findings": "النتائج",
+          "result.nothingFlagged":
+            "لا توجد ملاحظات. اجتاز هذا الـ SVG منقّي كومنز بنجاح.",
+          "result.parseFailed": "فشل التحليل",
+          "result.statusLabel": "الحالة",
+          "result.fileLabel": "الملف",
+          "result.originalSize": "الحجم الأصلي",
+          "result.cleanedSize": "الحجم بعد التنظيف",
+          "result.blockers": "المُعيقات",
+          "result.warnings": "التحذيرات",
+          "result.blocker": "مُعيق",
+          "result.warning": "تحذير",
+          "result.sanitising": "جارٍ التنقية",
+          "result.error": "خطأ",
+          "result.networkError": "خطأ في الشبكة",
+          "howto.title": "كيفية الاستخدام",
+          "howto.s1":
+            'أفلِت أو اختر ملف <span class="mono">.svg</span> (أو حمّل عينة من الأعلى).',
+          "howto.s2":
+            'راجع قائمة <strong>النتائج</strong>. العناصر المُعَلَّمة بـ <span class="px-1.5 py-0.5 rounded text-xs font-medium" style="background:#fee;color:var(--wmf-error)">مُعيق</span> ستُحذف أو تُرفض. عناصر <span class="px-1.5 py-0.5 rounded text-xs font-medium" style="background:#fef6e7;color:var(--wmf-warning)">تحذير</span> غالباً ما تكون عناصر خاصة بالمحرر (مثل Inkscape) ولن تُعرض.',
+          "howto.s3":
+            "استخدم المعاينة جنباً إلى جنب للتأكد من أن النسخة النظيفة لا تزال تبدو صحيحة.",
+          "howto.s4":
+            'انقر <strong>تنزيل</strong> وارفع الملف النظيف إلى <a class="underline" style="color:var(--wmf-blue)" target="_blank" rel="noopener" href="https://commons.wikimedia.org/wiki/Special:Upload">Special:Upload</a>.',
+          "guidelines.title": "إرشادات SVG لكومنز",
+          "guidelines.summary":
+            'مُلخّص من <a class="underline" style="color:var(--wmf-blue)" target="_blank" rel="noopener" href="https://commons.wikimedia.org/wiki/Help:SVG">Help:SVG</a> و<a class="underline" style="color:var(--wmf-blue)" target="_blank" rel="noopener" href="https://commons.wikimedia.org/wiki/Help:SVG_guidelines">Help:SVG guidelines</a> و<a class="underline" style="color:var(--wmf-blue)" target="_blank" rel="noopener" href="https://commons.wikimedia.org/wiki/Commons:Transition_to_SVG">Commons:Transition to SVG</a>. راجع المستندات الأصلية للنص الكامل.',
+          "rule1.title": "الجذر يجب أن يكون &lt;svg&gt;",
+          "rule1.body":
+            'يجب أن يكون العنصر الجذري <span class="mono">&lt;svg&gt;</span>. أي XML آخر غير SVG مرفوض.',
+          "rule2.title": "لا برامج نصية أو محتوى تفاعلي",
+          "rule2.body":
+            '<span class="mono">&lt;script&gt;</span> و<span class="mono">&lt;foreignObject&gt;</span> و<span class="mono">&lt;iframe&gt;</span> ومعالجات الأحداث (<span class="mono">onclick</span> و<span class="mono">onload</span> …) تُحذف أثناء التنقية.',
+          "rule3.title": "يجب أن تكون عناوين URL آمنة",
+          "rule3.body":
+            'قيم <span class="mono">href</span> يمكن أن تشير فقط إلى <span class="mono">#</span> أو <span class="mono">https://</span> أو <span class="mono">http://</span>. <span class="mono">javascript:</span> ومخططات أخرى مرفوضة.',
+          "rule4.title": "النطاقات المسموح بها فقط",
+          "rule4.body":
+            "تقبل ميدياويكي نطاقات SVG وInkscape وAdobe وCreative Commons وW3C RDF. XHTML داخل SVG مرفوض.",
+          "rule5.title": "استخدم خطوطاً متوافقة مع librsvg",
+          "rule5.body":
+            'يُصيّر كومنز SVG باستخدام librsvg الذي يدعم قائمة محدودة من الخطوط. يُفضَّل <span class="mono">\'Liberation Sans\', Arial, sans-serif</span> وتجنب "flowed text" في Inkscape.',
+          "rule6.title": "تحقق قبل الرفع",
+          "rule6.body":
+            'يُصيَّر SVG المُنسَّق جيداً بشكل متناسق. إلى جانب هذه الأداة يمكنك أيضاً استخدام <a class="underline" style="color:var(--wmf-blue)" target="_blank" rel="noopener" href="https://validator.w3.org/">W3C Markup Validator</a>.',
+          "about.title": "حول هذه الأداة",
+          "about.maintainer": "المُشرف",
+          "about.phab": "Phabricator",
+          "about.source": "الكود المصدري",
+          "about.license": "الترخيص",
+          "about.stack": "التقنيات",
+          "about.privacy": "الخصوصية",
+          "about.privacyValue":
+            "لا تُكتب أي ملفات على القرص. لا تحليلات. لا تسجيل دخول.",
+          "footer.codeLicense": 'الكود: <span class="mono">MIT</span>',
+          "footer.attribution":
+            'محتوى هذه الصفحة متاح بموجب <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener" class="underline" style="color:var(--wmf-blue)">رخصة المشاع الإبداعي نَسب المُصنَّف – الترخيص بالمثل 4.0</a>؛ قد تُطبَّق شروط إضافية. شعارات مشاريع ويكيميديا علامات تجارية لمؤسسة ويكيميديا وتُستخدم هنا للتعريف فقط — هذه الأداة ليست معتمدة من أو مرتبطة بمؤسسة ويكيميديا.',
+        },
+
+        fr: {
+          _label: "Français",
+          _dir: "ltr",
+          "header.title": "Désinfecteur SVG Commons",
+          "header.subtitle":
+            "Validateur SVG pour les téléversements Wikimedia Commons",
+          "nav.guide": "Guide",
+          "nav.about": "À propos",
+          "nav.source": "Source",
+          "intro.title":
+            "Validez vos fichiers SVG avant de les téléverser sur Commons",
+          "intro.body":
+            "MediaWiki supprime les éléments, attributs et URL non sûrs de chaque SVG téléversé sur Wikimedia Commons. Cet outil indique ce qui serait retiré et vous fournit une copie propre prête à téléverser. Les fichiers sont traités en mémoire et ne sont jamais stockés sur le serveur.",
+          "dropzone.main":
+            'Déposez un fichier <span class="mono">.svg</span> ici, ou <span class="font-medium" style="color: var(--wmf-blue)">cliquez pour choisir</span>',
+          "dropzone.note": "10 Mo maximum · traité en mémoire uniquement",
+          "samples.clean": "Tester l'exemple propre",
+          "samples.malicious": "Tester l'exemple malveillant",
+          "samples.mixed": "Tester l'exemple mixte",
+          "result.original": "Original",
+          "result.cleaned": "Nettoyé",
+          "result.download": "Télécharger",
+          "result.findings": "Résultats",
+          "result.nothingFlagged":
+            "Rien à signaler. Ce SVG passe le désinfecteur Commons sans souci.",
+          "result.parseFailed": "Analyse échouée",
+          "result.statusLabel": "Statut",
+          "result.fileLabel": "Fichier",
+          "result.originalSize": "Taille originale",
+          "result.cleanedSize": "Taille nettoyée",
+          "result.blockers": "Bloqueurs",
+          "result.warnings": "Avertissements",
+          "result.blocker": "Bloqueur",
+          "result.warning": "Avertissement",
+          "result.sanitising": "Désinfection de",
+          "result.error": "Erreur",
+          "result.networkError": "Erreur réseau",
+          "howto.title": "Comment l'utiliser",
+          "howto.s1":
+            'Déposez ou choisissez un fichier <span class="mono">.svg</span> (ou chargez un exemple ci-dessus).',
+          "howto.s2":
+            'Examinez la liste des <strong>Résultats</strong>. Les éléments marqués <span class="px-1.5 py-0.5 rounded text-xs font-medium" style="background:#fee;color:var(--wmf-error)">Bloqueur</span> seront retirés ou rejetés par Commons. Les <span class="px-1.5 py-0.5 rounded text-xs font-medium" style="background:#fef6e7;color:var(--wmf-warning)">Avertissement</span> sont généralement des éléments propres à un éditeur (ex. Inkscape) qui ne s\'afficheront pas.',
+          "howto.s3":
+            "Utilisez l'aperçu côte à côte pour vérifier que la version nettoyée reste correcte.",
+          "howto.s4":
+            'Cliquez sur <strong>Télécharger</strong> et téléversez le fichier nettoyé sur <a class="underline" style="color:var(--wmf-blue)" target="_blank" rel="noopener" href="https://commons.wikimedia.org/wiki/Special:Upload">Special:Upload</a>.',
+          "guidelines.title": "Lignes directrices SVG de Commons",
+          "guidelines.summary":
+            'Résumé de <a class="underline" style="color:var(--wmf-blue)" target="_blank" rel="noopener" href="https://commons.wikimedia.org/wiki/Help:SVG">Help:SVG</a>, <a class="underline" style="color:var(--wmf-blue)" target="_blank" rel="noopener" href="https://commons.wikimedia.org/wiki/Help:SVG_guidelines">Help:SVG guidelines</a> et <a class="underline" style="color:var(--wmf-blue)" target="_blank" rel="noopener" href="https://commons.wikimedia.org/wiki/Commons:Transition_to_SVG">Commons:Transition to SVG</a>. Consultez les originaux pour le texte complet.',
+          "rule1.title": "La racine doit être &lt;svg&gt;",
+          "rule1.body":
+            'L\'élément racine doit être <span class="mono">&lt;svg&gt;</span>. Tout XML autre que SVG est rejeté.',
+          "rule2.title": "Pas de scripts ni de contenu interactif",
+          "rule2.body":
+            '<span class="mono">&lt;script&gt;</span>, <span class="mono">&lt;foreignObject&gt;</span>, <span class="mono">&lt;iframe&gt;</span> et les gestionnaires d\'événements (<span class="mono">onclick</span>, <span class="mono">onload</span>, …) sont retirés lors de la désinfection.',
+          "rule3.title": "Les URL doivent être sûres",
+          "rule3.body":
+            'Les valeurs <span class="mono">href</span> ne peuvent pointer que vers <span class="mono">#</span>, <span class="mono">https://</span> ou <span class="mono">http://</span>. <span class="mono">javascript:</span> et autres schémas sont rejetés.',
+          "rule4.title": "Espaces de noms autorisés uniquement",
+          "rule4.body":
+            "MediaWiki accepte les espaces de noms SVG, Inkscape, Adobe, Creative Commons et W3C RDF. XHTML à l'intérieur d'un SVG est rejeté.",
+          "rule5.title": "Utilisez des polices compatibles librsvg",
+          "rule5.body":
+            "Commons rend les SVG avec librsvg, qui n'a qu'une liste limitée de polices. Préférez <span class=\"mono\">'Liberation Sans', Arial, sans-serif</span> et évitez le « flowed text » d'Inkscape.",
+          "rule6.title": "Validez avant de téléverser",
+          "rule6.body":
+            'Un SVG bien formé s\'affiche de manière cohérente. En plus de cet outil, vous pouvez utiliser le <a class="underline" style="color:var(--wmf-blue)" target="_blank" rel="noopener" href="https://validator.w3.org/">W3C Markup Validator</a>.',
+          "about.title": "À propos de cet outil",
+          "about.maintainer": "Mainteneur",
+          "about.phab": "Phabricator",
+          "about.source": "Code source",
+          "about.license": "Licence",
+          "about.stack": "Pile technique",
+          "about.privacy": "Confidentialité",
+          "about.privacyValue":
+            "Aucun fichier n'est écrit sur le disque. Pas d'analytique. Pas de connexion.",
+          "footer.codeLicense": 'Code : <span class="mono">MIT</span>',
+          "footer.attribution":
+            'Le contenu de cette page est disponible sous la <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener" class="underline" style="color:var(--wmf-blue)">licence Creative Commons Attribution-Partage dans les Mêmes Conditions 4.0</a> ; des conditions supplémentaires peuvent s\'appliquer. Les logos des projets Wikimedia sont des marques de la Wikimedia Foundation et ne sont utilisés ici qu\'à des fins d\'identification — cet outil n\'est ni approuvé ni affilié à la Wikimedia Foundation.',
+        },
+
+        es: {
+          _label: "Español",
+          _dir: "ltr",
+          "header.title": "Desinfectante SVG de Commons",
+          "header.subtitle": "Validador SVG para subidas a Wikimedia Commons",
+          "nav.guide": "Guía",
+          "nav.about": "Acerca de",
+          "nav.source": "Fuente",
+          "intro.title": "Valida archivos SVG antes de subirlos a Commons",
+          "intro.body":
+            "MediaWiki elimina elementos, atributos y URL inseguros de cada SVG subido a Wikimedia Commons. Esta herramienta muestra qué se eliminaría y te entrega una copia limpia que puedes subir directamente. Los archivos se procesan en memoria y nunca se almacenan en el servidor.",
+          "dropzone.main":
+            'Suelta un archivo <span class="mono">.svg</span> aquí, o <span class="font-medium" style="color: var(--wmf-blue)">haz clic para elegir</span>',
+          "dropzone.note": "10 MB máximo · procesado solo en memoria",
+          "samples.clean": "Probar muestra limpia",
+          "samples.malicious": "Probar muestra maliciosa",
+          "samples.mixed": "Probar muestra mixta",
+          "result.original": "Original",
+          "result.cleaned": "Limpio",
+          "result.download": "Descargar",
+          "result.findings": "Hallazgos",
+          "result.nothingFlagged":
+            "Nada marcado. Este SVG pasa el desinfectante de Commons sin problemas.",
+          "result.parseFailed": "Falló el análisis",
+          "result.statusLabel": "Estado",
+          "result.fileLabel": "Archivo",
+          "result.originalSize": "Tamaño original",
+          "result.cleanedSize": "Tamaño limpio",
+          "result.blockers": "Bloqueadores",
+          "result.warnings": "Advertencias",
+          "result.blocker": "Bloqueador",
+          "result.warning": "Advertencia",
+          "result.sanitising": "Desinfectando",
+          "result.error": "Error",
+          "result.networkError": "Error de red",
+          "howto.title": "Cómo usar",
+          "howto.s1":
+            'Suelta o elige un archivo <span class="mono">.svg</span> (o carga una muestra arriba).',
+          "howto.s2":
+            'Revisa la lista de <strong>Hallazgos</strong>. Los elementos marcados como <span class="px-1.5 py-0.5 rounded text-xs font-medium" style="background:#fee;color:var(--wmf-error)">Bloqueador</span> serán eliminados o rechazados por Commons. Los de <span class="px-1.5 py-0.5 rounded text-xs font-medium" style="background:#fef6e7;color:var(--wmf-warning)">Advertencia</span> suelen ser elementos específicos de un editor (p. ej. Inkscape) que no se mostrarán.',
+          "howto.s3":
+            "Usa la vista previa lado a lado para confirmar que la versión limpia sigue luciendo correcta.",
+          "howto.s4":
+            'Haz clic en <strong>Descargar</strong> y sube el archivo limpio a <a class="underline" style="color:var(--wmf-blue)" target="_blank" rel="noopener" href="https://commons.wikimedia.org/wiki/Special:Upload">Special:Upload</a>.',
+          "guidelines.title": "Pautas SVG de Commons",
+          "guidelines.summary":
+            'Resumido de <a class="underline" style="color:var(--wmf-blue)" target="_blank" rel="noopener" href="https://commons.wikimedia.org/wiki/Help:SVG">Help:SVG</a>, <a class="underline" style="color:var(--wmf-blue)" target="_blank" rel="noopener" href="https://commons.wikimedia.org/wiki/Help:SVG_guidelines">Help:SVG guidelines</a> y <a class="underline" style="color:var(--wmf-blue)" target="_blank" rel="noopener" href="https://commons.wikimedia.org/wiki/Commons:Transition_to_SVG">Commons:Transition to SVG</a>. Consulta los originales para el texto completo.',
+          "rule1.title": "La raíz debe ser &lt;svg&gt;",
+          "rule1.body":
+            'El elemento raíz debe ser <span class="mono">&lt;svg&gt;</span>. Cualquier otro XML que no sea SVG es rechazado.',
+          "rule2.title": "Sin scripts ni contenido interactivo",
+          "rule2.body":
+            '<span class="mono">&lt;script&gt;</span>, <span class="mono">&lt;foreignObject&gt;</span>, <span class="mono">&lt;iframe&gt;</span> y los manejadores de eventos (<span class="mono">onclick</span>, <span class="mono">onload</span>, …) se eliminan durante la desinfección.',
+          "rule3.title": "Las URL deben ser seguras",
+          "rule3.body":
+            'Los valores <span class="mono">href</span> solo pueden apuntar a <span class="mono">#</span>, <span class="mono">https://</span> o <span class="mono">http://</span>. <span class="mono">javascript:</span> y otros esquemas son rechazados.',
+          "rule4.title": "Solo espacios de nombres permitidos",
+          "rule4.body":
+            "MediaWiki acepta los espacios de nombres SVG, Inkscape, Adobe, Creative Commons y W3C RDF. XHTML dentro de un SVG es rechazado.",
+          "rule5.title": "Usa fuentes compatibles con librsvg",
+          "rule5.body":
+            "Commons renderiza SVG con librsvg, que solo dispone de una lista limitada de fuentes. Prefiere <span class=\"mono\">'Liberation Sans', Arial, sans-serif</span> y evita el «flowed text» de Inkscape.",
+          "rule6.title": "Valida antes de subir",
+          "rule6.body":
+            'Un SVG bien formado se renderiza de forma consistente. Además de esta herramienta, puedes usar el <a class="underline" style="color:var(--wmf-blue)" target="_blank" rel="noopener" href="https://validator.w3.org/">W3C Markup Validator</a>.',
+          "about.title": "Acerca de esta herramienta",
+          "about.maintainer": "Mantenedor",
+          "about.phab": "Phabricator",
+          "about.source": "Código fuente",
+          "about.license": "Licencia",
+          "about.stack": "Pila tecnológica",
+          "about.privacy": "Privacidad",
+          "about.privacyValue":
+            "Ningún archivo se escribe en disco. Sin analíticas. Sin inicio de sesión.",
+          "footer.codeLicense": 'Código: <span class="mono">MIT</span>',
+          "footer.attribution":
+            'El contenido de esta página está disponible bajo la <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener" class="underline" style="color:var(--wmf-blue)">licencia Creative Commons Atribución-CompartirIgual 4.0</a>; pueden aplicar términos adicionales. Los logotipos de los proyectos Wikimedia son marcas registradas de la Wikimedia Foundation y se usan aquí solo con fines de identificación — esta herramienta no está respaldada ni afiliada a la Wikimedia Foundation.',
+        },
+
+        de: {
+          _label: "Deutsch",
+          _dir: "ltr",
+          "header.title": "Commons-SVG-Bereiniger",
+          "header.subtitle": "SVG-Validator für Wikimedia-Commons-Uploads",
+          "nav.guide": "Anleitung",
+          "nav.about": "Über",
+          "nav.source": "Quelle",
+          "intro.title": "SVG-Dateien vor dem Hochladen zu Commons überprüfen",
+          "intro.body":
+            "MediaWiki entfernt nicht erlaubte Elemente, Attribute und unsichere URLs aus jeder zu Wikimedia Commons hochgeladenen SVG-Datei. Dieses Tool zeigt, was entfernt würde, und liefert eine saubere Kopie zum direkten Hochladen. Dateien werden im Speicher verarbeitet und nie auf dem Server gespeichert.",
+          "dropzone.main":
+            'Lege eine <span class="mono">.svg</span>-Datei hier ab, oder <span class="font-medium" style="color: var(--wmf-blue)">klicke zum Auswählen</span>',
+          "dropzone.note":
+            "Maximal 10 MB · ausschließlich im Speicher verarbeitet",
+          "samples.clean": "Sauberes Beispiel testen",
+          "samples.malicious": "Bösartiges Beispiel testen",
+          "samples.mixed": "Gemischtes Beispiel testen",
+          "result.original": "Original",
+          "result.cleaned": "Bereinigt",
+          "result.download": "Herunterladen",
+          "result.findings": "Befunde",
+          "result.nothingFlagged":
+            "Keine Beanstandungen. Diese SVG passiert den Commons-Bereiniger einwandfrei.",
+          "result.parseFailed": "Parsen fehlgeschlagen",
+          "result.statusLabel": "Status",
+          "result.fileLabel": "Datei",
+          "result.originalSize": "Originalgröße",
+          "result.cleanedSize": "Bereinigte Größe",
+          "result.blockers": "Blocker",
+          "result.warnings": "Warnungen",
+          "result.blocker": "Blocker",
+          "result.warning": "Warnung",
+          "result.sanitising": "Bereinige",
+          "result.error": "Fehler",
+          "result.networkError": "Netzwerkfehler",
+          "howto.title": "Verwendung",
+          "howto.s1":
+            'Lege eine <span class="mono">.svg</span>-Datei ab oder wähle eine aus (oder lade ein Beispiel oben).',
+          "howto.s2":
+            'Überprüfe die <strong>Befunde</strong>-Liste. Mit <span class="px-1.5 py-0.5 rounded text-xs font-medium" style="background:#fee;color:var(--wmf-error)">Blocker</span> markierte Elemente werden von Commons entfernt oder abgelehnt. <span class="px-1.5 py-0.5 rounded text-xs font-medium" style="background:#fef6e7;color:var(--wmf-warning)">Warnung</span>-Elemente sind meist editorspezifisch (z. B. Inkscape) und werden nicht gerendert.',
+          "howto.s3":
+            "Nutze die Seite-an-Seite-Vorschau, um zu prüfen, dass die bereinigte Version weiterhin korrekt aussieht.",
+          "howto.s4":
+            'Klicke auf <strong>Herunterladen</strong> und lade die bereinigte Datei zu <a class="underline" style="color:var(--wmf-blue)" target="_blank" rel="noopener" href="https://commons.wikimedia.org/wiki/Special:Upload">Special:Upload</a> hoch.',
+          "guidelines.title": "Commons-SVG-Richtlinien",
+          "guidelines.summary":
+            'Zusammengefasst aus <a class="underline" style="color:var(--wmf-blue)" target="_blank" rel="noopener" href="https://commons.wikimedia.org/wiki/Help:SVG">Help:SVG</a>, <a class="underline" style="color:var(--wmf-blue)" target="_blank" rel="noopener" href="https://commons.wikimedia.org/wiki/Help:SVG_guidelines">Help:SVG guidelines</a> und <a class="underline" style="color:var(--wmf-blue)" target="_blank" rel="noopener" href="https://commons.wikimedia.org/wiki/Commons:Transition_to_SVG">Commons:Transition to SVG</a>. Vollständiger Text in den Originalen.',
+          "rule1.title": "Wurzel muss &lt;svg&gt; sein",
+          "rule1.body":
+            'Das Wurzelelement muss <span class="mono">&lt;svg&gt;</span> sein. Anderes XML als SVG wird abgelehnt.',
+          "rule2.title": "Keine Skripte oder interaktive Inhalte",
+          "rule2.body":
+            '<span class="mono">&lt;script&gt;</span>, <span class="mono">&lt;foreignObject&gt;</span>, <span class="mono">&lt;iframe&gt;</span> und Event-Handler (<span class="mono">onclick</span>, <span class="mono">onload</span>, …) werden bei der Bereinigung entfernt.',
+          "rule3.title": "URLs müssen sicher sein",
+          "rule3.body":
+            '<span class="mono">href</span>-Werte dürfen nur auf <span class="mono">#</span>, <span class="mono">https://</span> oder <span class="mono">http://</span> verweisen. <span class="mono">javascript:</span> und andere Schemata werden abgelehnt.',
+          "rule4.title": "Nur erlaubte Namensräume",
+          "rule4.body":
+            "MediaWiki akzeptiert die Namensräume SVG, Inkscape, Adobe, Creative Commons und W3C RDF. XHTML innerhalb einer SVG wird abgelehnt.",
+          "rule5.title": "librsvg-kompatible Schriften verwenden",
+          "rule5.body":
+            "Commons rendert SVGs mit librsvg, das nur eine begrenzte Schriftartenliste hat. Bevorzuge <span class=\"mono\">'Liberation Sans', Arial, sans-serif</span> und vermeide Inkscape-„Flowed Text.",
+          "rule6.title": "Vor dem Hochladen validieren",
+          "rule6.body":
+            'Eine wohlgeformte SVG wird konsistent gerendert. Zusätzlich zu diesem Tool kannst du den <a class="underline" style="color:var(--wmf-blue)" target="_blank" rel="noopener" href="https://validator.w3.org/">W3C Markup Validator</a> verwenden.',
+          "about.title": "Über dieses Tool",
+          "about.maintainer": "Betreuer",
+          "about.phab": "Phabricator",
+          "about.source": "Quellcode",
+          "about.license": "Lizenz",
+          "about.stack": "Stack",
+          "about.privacy": "Datenschutz",
+          "about.privacyValue":
+            "Keine Datei wird auf der Festplatte gespeichert. Keine Analyse. Kein Login.",
+          "footer.codeLicense": 'Code: <span class="mono">MIT</span>',
+          "footer.attribution":
+            'Der Inhalt dieser Seite ist unter der <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener" class="underline" style="color:var(--wmf-blue)">Creative-Commons-Lizenz „Namensnennung – Weitergabe unter gleichen Bedingungen 4.0"</a> verfügbar; weitere Bedingungen können gelten. Wikimedia-Projektlogos sind Marken der Wikimedia Foundation und werden hier nur zur Identifikation verwendet — dieses Tool ist nicht von der Wikimedia Foundation befürwortet oder mit ihr verbunden.',
+        },
+      };
+
+      // ─── I18N ENGINE ──────────────────────────────────────────
+      const STORAGE_KEY = "csvg.lang";
+      let currentLang = "en";
+
+      function applyLang(lang) {
+        const dict = I18N[lang] || I18N.en;
+        const dir = dict._dir || "ltr";
+        currentLang = lang;
+        document.documentElement.lang = lang;
+        document.documentElement.dir = dir;
+        document.getElementById("langLabel").textContent = dict._label;
+
+        document.querySelectorAll("[data-i18n]").forEach((el) => {
+          const key = el.getAttribute("data-i18n");
+          if (dict[key] !== undefined) el.textContent = dict[key];
+        });
+        document.querySelectorAll("[data-i18n-html]").forEach((el) => {
+          const key = el.getAttribute("data-i18n-html");
+          if (dict[key] !== undefined) el.innerHTML = dict[key];
+        });
+
+        try {
+          localStorage.setItem(STORAGE_KEY, lang);
+        } catch (e) {}
+      }
+
+      function t(key) {
+        const dict = I18N[currentLang] || I18N.en;
+        return dict[key] || I18N.en[key] || key;
+      }
+
+      // ─── DOM REFS ─────────────────────────────────────────────
       const dz = document.getElementById("dropzone");
       const fi = document.getElementById("fileInput");
       const statusEl = document.getElementById("status");
@@ -639,8 +1365,9 @@
       const previewRow = document.getElementById("preview-row");
       const previewOrig = document.getElementById("preview-original");
       const previewCln = document.getElementById("preview-cleaned");
+      const langBtn = document.getElementById("langBtn");
+      const langMenu = document.getElementById("langMenu");
 
-      // State — reset on every new upload
       let state = {
         cleanedSvg: null,
         cleanedName: null,
@@ -648,7 +1375,7 @@
         cleanedUrl: null,
       };
 
-      // ─── SAMPLE SVGs ───────────────────────────────────────────
+      // ─── SAMPLE SVGs ──────────────────────────────────────────
       const SAMPLES = {
         clean: `<?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
@@ -751,7 +1478,6 @@
       }
 
       function buildCleanedFilename(originalName) {
-        // Strip .svg, strip any trailing .cleaned, then re-append .cleaned.svg
         let base = originalName.replace(/\.svg$/i, "");
         base = base.replace(/(\.cleaned)+$/i, "");
         return base + ".cleaned.svg";
@@ -774,9 +1500,8 @@
       // ─── UPLOAD HANDLER ───────────────────────────────────────
       async function processBlob(blob, filename) {
         clearState();
-        statusEl.textContent = `Sanitising ${filename}…`;
+        statusEl.textContent = `${t("result.sanitising")} ${filename}…`;
 
-        // Show original preview immediately
         state.origUrl = URL.createObjectURL(blob);
         previewOrig.src = state.origUrl;
 
@@ -791,11 +1516,11 @@
           const res = await fetch("/sanitize", { method: "POST", body: fd });
           data = await res.json();
           if (!res.ok && !data.success && !data.issues) {
-            statusEl.innerHTML = `<span style="color: var(--wmf-error);">Error: ${data.error || "Sanitisation failed"}</span>`;
+            statusEl.innerHTML = `<span style="color: var(--wmf-error);">${t("result.error")}: ${data.error || "Sanitisation failed"}</span>`;
             return;
           }
         } catch (err) {
-          statusEl.innerHTML = `<span style="color: var(--wmf-error);">Network error: ${err.message}</span>`;
+          statusEl.innerHTML = `<span style="color: var(--wmf-error);">${t("result.networkError")}: ${err.message}</span>`;
           return;
         }
 
@@ -803,16 +1528,14 @@
         result.classList.remove("hidden");
 
         if (!data.success) {
-          // Parse failed — no cleaned output, no download
           stats.innerHTML =
-            statBox("Status", "Parse failed", "error") +
-            statBox("File", filename, "neutral");
+            statBox(t("result.statusLabel"), t("result.parseFailed"), "error") +
+            statBox(t("result.fileLabel"), filename, "neutral");
           renderIssues(data.issues || []);
           previewRow.classList.add("hidden");
           return;
         }
 
-        // Success
         state.cleanedSvg = data.cleaned;
         state.cleanedName = buildCleanedFilename(filename);
         const cleanedBlob = new Blob([data.cleaned], { type: "image/svg+xml" });
@@ -823,10 +1546,10 @@
         const warnTone = data.warning_count ? "warning" : "success";
 
         stats.innerHTML =
-          statBox("Original size", fmtBytes(data.original_size)) +
-          statBox("Cleaned size", fmtBytes(data.cleaned_size)) +
-          statBox("Blockers", data.blocker_count, blockerTone) +
-          statBox("Warnings", data.warning_count, warnTone);
+          statBox(t("result.originalSize"), fmtBytes(data.original_size)) +
+          statBox(t("result.cleanedSize"), fmtBytes(data.cleaned_size)) +
+          statBox(t("result.blockers"), data.blocker_count, blockerTone) +
+          statBox(t("result.warnings"), data.warning_count, warnTone);
 
         previewRow.classList.remove("hidden");
         downloadBtn.classList.remove("hidden");
@@ -838,7 +1561,7 @@
           issuesEl.innerHTML = `
       <li class="px-5 py-4 flex items-start gap-3" style="color: var(--wmf-success);">
         <span>${icon("success")}</span>
-        <span>Nothing flagged. This SVG passes the Commons sanitiser cleanly.</span>
+        <span>${t("result.nothingFlagged")}</span>
       </li>`;
           return;
         }
@@ -849,7 +1572,10 @@
               i.severity === "blocker"
                 ? "var(--wmf-error)"
                 : "var(--wmf-warning)";
-            const label = i.severity === "blocker" ? "Blocker" : "Warning";
+            const label =
+              i.severity === "blocker"
+                ? t("result.blocker")
+                : t("result.warning");
             return `
       <li class="px-5 py-3 flex items-start gap-3 text-sm">
         <span style="color: ${color};">${icon(tone)}</span>
@@ -873,7 +1599,7 @@
       fi.addEventListener("change", (e) => {
         const f = e.target.files[0];
         if (f) processBlob(f, f.name);
-        fi.value = ""; // allow re-uploading the same file
+        fi.value = "";
       });
 
       ["dragover", "dragenter"].forEach((ev) =>
@@ -915,6 +1641,33 @@
         a.remove();
         setTimeout(() => URL.revokeObjectURL(url), 1000);
       });
+
+      // ─── LANGUAGE DROPDOWN ───────────────────────────────────
+      langBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        langMenu.classList.toggle("hidden");
+      });
+      document.addEventListener("click", () =>
+        langMenu.classList.add("hidden"),
+      );
+      document.querySelectorAll(".lang-opt").forEach((b) =>
+        b.addEventListener("click", () => {
+          applyLang(b.dataset.lang);
+          langMenu.classList.add("hidden");
+        }),
+      );
+
+      // ─── BOOT ────────────────────────────────────────────────
+      (function init() {
+        let saved = null;
+        try {
+          saved = localStorage.getItem(STORAGE_KEY);
+        } catch (e) {}
+        const browser = (navigator.language || "en").slice(0, 2);
+        const start =
+          saved && I18N[saved] ? saved : I18N[browser] ? browser : "en";
+        applyLang(start);
+      })();
     </script>
   </body>
 </html>
