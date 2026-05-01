@@ -1,0 +1,920 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Commons SVG Sanitizer · Wikimedia Toolforge</title>
+    <link
+      rel="icon"
+      type="image/svg+xml"
+      href="{{ url_for('static', filename='favicon.svg') }}"
+    />
+    <link
+      rel="alternate icon"
+      href="{{ url_for('static', filename='favicon.svg') }}"
+    />
+    <meta name="theme-color" content="#3366CC" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      :root {
+        --wmf-blue: #3366cc;
+        --wmf-blue-dark: #2a4b8d;
+        --wmf-blue-light: #eaf3ff;
+        --wmf-text: #202122;
+        --wmf-text-muted: #54595d;
+        --wmf-border: #a2a9b1;
+        --wmf-border-soft: #c8ccd1;
+        --wmf-bg: #f8f9fa;
+        --wmf-success: #14866d;
+        --wmf-warning: #ac6600;
+        --wmf-error: #bf3c2c;
+      }
+      body {
+        font-family: "Linux Libertine", "Georgia", serif;
+      }
+      .ui-font {
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue",
+          sans-serif;
+      }
+      .mono {
+        font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+      }
+      .preview-shell {
+        background-image:
+          linear-gradient(45deg, #eef1f5 25%, transparent 25%),
+          linear-gradient(-45deg, #eef1f5 25%, transparent 25%),
+          linear-gradient(45deg, transparent 75%, #eef1f5 75%),
+          linear-gradient(-45deg, transparent 75%, #eef1f5 75%);
+        background-size: 16px 16px;
+        background-position:
+          0 0,
+          0 8px,
+          8px -8px,
+          -8px 0;
+      }
+    </style>
+  </head>
+  <body
+    class="ui-font"
+    style="background: var(--wmf-bg); color: var(--wmf-text)"
+  >
+    <!-- ─── HEADER ─────────────────────────────────────────────── -->
+    <header
+      class="bg-white border-b"
+      style="border-color: var(--wmf-border-soft)"
+    >
+      <div
+        class="max-w-6xl mx-auto px-6 py-5 flex items-center justify-between gap-4"
+      >
+        <div class="flex items-center gap-3">
+          <img
+            src="{{ url_for('static', filename='logos/commons.svg') }}"
+            alt="Wikimedia Commons logo"
+            class="w-10 h-10"
+          />
+          <div>
+            <h1
+              class="text-xl font-semibold leading-tight"
+              style="color: var(--wmf-text)"
+            >
+              Commons SVG Sanitizer
+            </h1>
+            <div class="text-xs mono" style="color: var(--wmf-text-muted)">
+              SVG validator for Wikimedia Commons uploads
+            </div>
+          </div>
+        </div>
+        <nav class="hidden sm:flex items-center gap-5 text-sm">
+          <a
+            href="#guide"
+            class="hover:underline"
+            style="color: var(--wmf-blue)"
+            >Guide</a
+          >
+          <a
+            href="#about"
+            class="hover:underline"
+            style="color: var(--wmf-blue)"
+            >About</a
+          >
+          <a href="#repo" class="hover:underline" style="color: var(--wmf-blue)"
+            >Source</a
+          >
+        </nav>
+      </div>
+    </header>
+
+    <main class="max-w-6xl mx-auto px-6 py-8">
+      <!-- ─── INTRO ─────────────────────────────────────────────── -->
+      <section class="mb-8">
+        <h2 class="text-2xl font-semibold mb-2" style="color: var(--wmf-text)">
+          Validate SVG files before uploading to Commons
+        </h2>
+        <p
+          class="text-base leading-relaxed"
+          style="color: var(--wmf-text-muted); max-width: 70ch"
+        >
+          MediaWiki strips disallowed elements, attributes, and unsafe URLs from
+          every SVG uploaded to Wikimedia Commons. This tool reports what would
+          be removed and gives you a clean copy you can upload directly. Files
+          are processed in memory and never stored on the server.
+        </p>
+      </section>
+
+      <!-- ─── DROP ZONE ─────────────────────────────────────────── -->
+      <section id="drop-section" class="mb-6">
+        <div
+          id="dropzone"
+          class="bg-white rounded-md border-2 border-dashed cursor-pointer transition p-12 text-center"
+          style="border-color: var(--wmf-border)"
+        >
+          <svg
+            class="mx-auto mb-3"
+            width="40"
+            height="40"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.5"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            style="color: var(--wmf-blue)"
+          >
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+            <polyline points="17 8 12 3 7 8" />
+            <line x1="12" y1="3" x2="12" y2="15" />
+          </svg>
+          <p class="text-base" style="color: var(--wmf-text)">
+            Drop an <span class="mono">.svg</span> file here, or
+            <span class="font-medium" style="color: var(--wmf-blue)"
+              >click to choose</span
+            >
+          </p>
+          <p class="text-xs mt-2" style="color: var(--wmf-text-muted)">
+            10 MB maximum · processed in memory only
+          </p>
+          <input
+            type="file"
+            id="fileInput"
+            accept=".svg,image/svg+xml"
+            class="hidden"
+          />
+        </div>
+
+        <div class="mt-3 flex flex-wrap gap-2">
+          <button
+            data-sample="clean"
+            class="sample-btn text-xs px-3 py-1.5 rounded border bg-white hover:bg-gray-50"
+            style="border-color: var(--wmf-border-soft); color: var(--wmf-blue)"
+          >
+            Try clean sample
+          </button>
+          <button
+            data-sample="malicious"
+            class="sample-btn text-xs px-3 py-1.5 rounded border bg-white hover:bg-gray-50"
+            style="border-color: var(--wmf-border-soft); color: var(--wmf-blue)"
+          >
+            Try malicious sample
+          </button>
+          <button
+            data-sample="mixed"
+            class="sample-btn text-xs px-3 py-1.5 rounded border bg-white hover:bg-gray-50"
+            style="border-color: var(--wmf-border-soft); color: var(--wmf-blue)"
+          >
+            Try mixed sample
+          </button>
+        </div>
+
+        <div
+          id="status"
+          class="mt-3 text-sm"
+          style="color: var(--wmf-text-muted)"
+        ></div>
+      </section>
+
+      <!-- ─── RESULT (hidden until upload) ──────────────────────── -->
+      <section id="result" class="hidden">
+        <!-- Stats strip -->
+        <div
+          id="stats"
+          class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-5"
+        ></div>
+
+        <!-- Side-by-side preview -->
+        <div id="preview-row" class="grid md:grid-cols-2 gap-4 mb-5 hidden">
+          <div
+            class="bg-white rounded-md border"
+            style="border-color: var(--wmf-border-soft)"
+          >
+            <div
+              class="px-4 py-2 border-b text-xs uppercase tracking-wide font-medium"
+              style="
+                border-color: var(--wmf-border-soft);
+                color: var(--wmf-text-muted);
+              "
+            >
+              Original
+            </div>
+            <div
+              class="preview-shell flex items-center justify-center"
+              style="height: 280px"
+            >
+              <img
+                id="preview-original"
+                alt="Original SVG preview"
+                class="max-h-full max-w-full"
+              />
+            </div>
+          </div>
+          <div
+            class="bg-white rounded-md border"
+            style="border-color: var(--wmf-border-soft)"
+          >
+            <div
+              class="px-4 py-2 border-b text-xs uppercase tracking-wide font-medium flex items-center justify-between"
+              style="
+                border-color: var(--wmf-border-soft);
+                color: var(--wmf-text-muted);
+              "
+            >
+              <span>Cleaned</span>
+              <button
+                id="downloadBtn"
+                class="hidden text-xs font-medium px-3 py-1 rounded text-white"
+                style="background: var(--wmf-blue)"
+              >
+                Download
+              </button>
+            </div>
+            <div
+              class="preview-shell flex items-center justify-center"
+              style="height: 280px"
+            >
+              <img
+                id="preview-cleaned"
+                alt="Cleaned SVG preview"
+                class="max-h-full max-w-full"
+              />
+            </div>
+          </div>
+        </div>
+
+        <!-- Issues -->
+        <div
+          class="bg-white rounded-md border"
+          style="border-color: var(--wmf-border-soft)"
+        >
+          <div
+            class="px-5 py-3 border-b font-medium"
+            style="border-color: var(--wmf-border-soft)"
+          >
+            Findings
+          </div>
+          <ul
+            id="issues"
+            class="divide-y"
+            style="border-color: var(--wmf-border-soft)"
+          ></ul>
+        </div>
+      </section>
+
+      <!-- ─── HOW TO USE ─────────────────────────────────────────── -->
+      <section id="guide" class="mt-12">
+        <h2 class="text-xl font-semibold mb-3" style="color: var(--wmf-text)">
+          How to use
+        </h2>
+        <ol
+          class="list-decimal pl-5 space-y-2 text-sm leading-relaxed"
+          style="color: var(--wmf-text)"
+        >
+          <li>
+            Drop or choose an <span class="mono">.svg</span> file (or load a
+            sample above to try the tool).
+          </li>
+          <li>
+            Review the <strong>Findings</strong> list. Items marked
+            <span
+              class="px-1.5 py-0.5 rounded text-xs font-medium"
+              style="background: #fee; color: var(--wmf-error)"
+              >Blocker</span
+            >
+            will be stripped or rejected by Commons.
+            <span
+              class="px-1.5 py-0.5 rounded text-xs font-medium"
+              style="background: #fef6e7; color: var(--wmf-warning)"
+              >Warning</span
+            >
+            items are usually editor-specific elements (e.g. Inkscape) that
+            won't render.
+          </li>
+          <li>
+            Use the side-by-side preview to confirm the cleaned version still
+            looks correct.
+          </li>
+          <li>
+            Click <strong>Download</strong> and upload the cleaned file to
+            <a
+              class="underline"
+              style="color: var(--wmf-blue)"
+              target="_blank"
+              rel="noopener"
+              href="https://commons.wikimedia.org/wiki/Special:Upload"
+              >Special:Upload</a
+            >.
+          </li>
+        </ol>
+      </section>
+
+      <!-- ─── COMMONS SVG GUIDELINES ────────────────────────────── -->
+      <section class="mt-10">
+        <h2 class="text-xl font-semibold mb-3" style="color: var(--wmf-text)">
+          Commons SVG guidelines
+        </h2>
+        <p
+          class="text-sm mb-4"
+          style="color: var(--wmf-text-muted); max-width: 70ch"
+        >
+          Summarised from
+          <a
+            class="underline"
+            style="color: var(--wmf-blue)"
+            target="_blank"
+            rel="noopener"
+            href="https://commons.wikimedia.org/wiki/Help:SVG"
+            >Help:SVG</a
+          >,
+          <a
+            class="underline"
+            style="color: var(--wmf-blue)"
+            target="_blank"
+            rel="noopener"
+            href="https://commons.wikimedia.org/wiki/Help:SVG_guidelines"
+            >Help:SVG guidelines</a
+          >, and
+          <a
+            class="underline"
+            style="color: var(--wmf-blue)"
+            target="_blank"
+            rel="noopener"
+            href="https://commons.wikimedia.org/wiki/Commons:Transition_to_SVG"
+            >Commons:Transition to SVG</a
+          >. Refer to the originals for the full text.
+        </p>
+
+        <div class="grid sm:grid-cols-2 gap-3">
+          <div
+            class="bg-white rounded-md border p-4"
+            style="border-color: var(--wmf-border-soft)"
+          >
+            <h3 class="font-medium mb-1">Root must be &lt;svg&gt;</h3>
+            <p class="text-sm" style="color: var(--wmf-text-muted)">
+              The root element must be <span class="mono">&lt;svg&gt;</span>.
+              Standalone XML other than SVG is rejected.
+            </p>
+          </div>
+          <div
+            class="bg-white rounded-md border p-4"
+            style="border-color: var(--wmf-border-soft)"
+          >
+            <h3 class="font-medium mb-1">No scripts or interactive content</h3>
+            <p class="text-sm" style="color: var(--wmf-text-muted)">
+              <span class="mono">&lt;script&gt;</span>,
+              <span class="mono">&lt;foreignObject&gt;</span>,
+              <span class="mono">&lt;iframe&gt;</span>, and event handlers
+              (<span class="mono">onclick</span>,
+              <span class="mono">onload</span>, …) are stripped during
+              sanitisation.
+            </p>
+          </div>
+          <div
+            class="bg-white rounded-md border p-4"
+            style="border-color: var(--wmf-border-soft)"
+          >
+            <h3 class="font-medium mb-1">URLs must be safe</h3>
+            <p class="text-sm" style="color: var(--wmf-text-muted)">
+              <span class="mono">href</span> values may only point to
+              <span class="mono">#</span>, <span class="mono">https://</span>,
+              or <span class="mono">http://</span>.
+              <span class="mono">javascript:</span> and other schemes are
+              rejected.
+            </p>
+          </div>
+          <div
+            class="bg-white rounded-md border p-4"
+            style="border-color: var(--wmf-border-soft)"
+          >
+            <h3 class="font-medium mb-1">Allowed namespaces only</h3>
+            <p class="text-sm" style="color: var(--wmf-text-muted)">
+              MediaWiki accepts SVG, Inkscape, Adobe, Creative Commons, and W3C
+              RDF namespaces. XHTML inside an SVG is rejected.
+            </p>
+          </div>
+          <div
+            class="bg-white rounded-md border p-4"
+            style="border-color: var(--wmf-border-soft)"
+          >
+            <h3 class="font-medium mb-1">Use librsvg-friendly fonts</h3>
+            <p class="text-sm" style="color: var(--wmf-text-muted)">
+              Commons renders SVGs with librsvg, which only has a limited font
+              list. Prefer
+              <span class="mono">'Liberation Sans', Arial, sans-serif</span> and
+              avoid Inkscape "flowed text".
+            </p>
+          </div>
+          <div
+            class="bg-white rounded-md border p-4"
+            style="border-color: var(--wmf-border-soft)"
+          >
+            <h3 class="font-medium mb-1">Validate before uploading</h3>
+            <p class="text-sm" style="color: var(--wmf-text-muted)">
+              A well-formed SVG renders consistently. Beyond this tool you can
+              also use the
+              <a
+                class="underline"
+                style="color: var(--wmf-blue)"
+                target="_blank"
+                rel="noopener"
+                href="https://validator.w3.org/"
+                >W3C Markup Validator</a
+              >.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ─── ABOUT ─────────────────────────────────────────────── -->
+      <section id="about" class="mt-12">
+        <h2 class="text-xl font-semibold mb-3" style="color: var(--wmf-text)">
+          About this tool
+        </h2>
+        <div
+          class="bg-white rounded-md border p-5"
+          style="border-color: var(--wmf-border-soft)"
+        >
+          <dl class="grid sm:grid-cols-2 gap-x-8 gap-y-3 text-sm">
+            <div>
+              <dt class="font-medium" style="color: var(--wmf-text)">
+                Maintainer
+              </dt>
+              <dd class="mono" style="color: var(--wmf-text-muted)">
+                <a
+                  class="underline"
+                  style="color: var(--wmf-blue)"
+                  href="https://meta.wikimedia.org/wiki/User:Status_401"
+                  target="_blank"
+                  rel="noopener"
+                >
+                  Status 401
+                </a>
+              </dd>
+            </div>
+            <div>
+              <dt class="font-medium" style="color: var(--wmf-text)">
+                Phabricator
+              </dt>
+              <dd class="mono" style="color: var(--wmf-text-muted)">
+                <!-- TODO: replace with your real Phab user URL -->
+                <a
+                  class="underline"
+                  style="color: var(--wmf-blue)"
+                  href="https://phabricator.wikimedia.org/p/status-401/"
+                  target="_blank"
+                  rel="noopener"
+                >
+                  @Status-401
+                </a>
+              </dd>
+            </div>
+            <div id="repo">
+              <dt class="font-medium" style="color: var(--wmf-text)">
+                Source code
+              </dt>
+              <dd class="mono" style="color: var(--wmf-text-muted)">
+                <!-- TODO: replace with your real GitHub repo -->
+                <a
+                  class="underline"
+                  style="color: var(--wmf-blue)"
+                  href="https://github.com/the-code-machine/commons-svg-sanitizer"
+                  target="_blank"
+                  rel="noopener"
+                >
+                  github.com/the-code-machine/commons-svg-sanitizer
+                </a>
+              </dd>
+            </div>
+            <div>
+              <dt class="font-medium" style="color: var(--wmf-text)">
+                License
+              </dt>
+              <dd class="mono" style="color: var(--wmf-text-muted)">MIT</dd>
+            </div>
+            <div>
+              <dt class="font-medium" style="color: var(--wmf-text)">Stack</dt>
+              <dd style="color: var(--wmf-text-muted)">
+                Flask · lxml · defusedxml · Tailwind
+              </dd>
+            </div>
+            <div>
+              <dt class="font-medium" style="color: var(--wmf-text)">
+                Privacy
+              </dt>
+              <dd style="color: var(--wmf-text-muted)">
+                No file is written to disk. No analytics. No login.
+              </dd>
+            </div>
+          </dl>
+        </div>
+      </section>
+
+      <!-- ─── FOOTER ────────────────────────────────────────────── -->
+      <footer
+        class="mt-12 pt-6 border-t text-xs"
+        style="
+          border-color: var(--wmf-border-soft);
+          color: var(--wmf-text-muted);
+        "
+      >
+        <div class="flex flex-wrap items-center justify-between gap-4">
+          <div class="flex items-center gap-5">
+            <a
+              href="https://commons.wikimedia.org/"
+              target="_blank"
+              rel="noopener"
+              title="Wikimedia Commons"
+              class="opacity-60 hover:opacity-100 transition"
+            >
+              <img
+                src="{{ url_for('static', filename='logos/commons.svg') }}"
+                alt="Wikimedia Commons"
+                class="h-6 w-auto"
+              />
+            </a>
+            <a
+              href="https://www.wikipedia.org/"
+              target="_blank"
+              rel="noopener"
+              title="Wikipedia"
+              class="opacity-60 hover:opacity-100 transition"
+            >
+              <img
+                src="{{ url_for('static', filename='logos/wikipedia.svg') }}"
+                alt="Wikipedia"
+                class="h-6 w-auto"
+              />
+            </a>
+            <a
+              href="https://www.wikidata.org/"
+              target="_blank"
+              rel="noopener"
+              title="Wikidata"
+              class="opacity-60 hover:opacity-100 transition"
+            >
+              <img
+                src="{{ url_for('static', filename='logos/wikidata.svg') }}"
+                alt="Wikidata"
+                class="h-6 w-auto"
+              />
+            </a>
+          </div>
+
+          <div class="flex items-center gap-3">
+            <a
+              href="https://creativecommons.org/licenses/by-sa/4.0/"
+              target="_blank"
+              rel="noopener"
+              title="Content licensed CC BY-SA 4.0"
+              class="flex items-center gap-1.5 opacity-70 hover:opacity-100 transition"
+            >
+              <!-- CC icon -->
+              <svg
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.8"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <circle cx="12" cy="12" r="10" />
+                <path
+                  d="M9.5 9.5a2.5 2.5 0 0 1 5 0M14.5 14.5a2.5 2.5 0 0 1-5 0"
+                />
+              </svg>
+              <span class="mono">CC BY-SA 4.0</span>
+            </a>
+            <span style="color: var(--wmf-border)">·</span>
+            <span>Code: <span class="mono">MIT</span></span>
+          </div>
+        </div>
+
+        <div class="mt-4 leading-relaxed">
+          Content on this page is available under the
+          <a
+            href="https://creativecommons.org/licenses/by-sa/4.0/"
+            target="_blank"
+            rel="noopener"
+            class="underline"
+            style="color: var(--wmf-blue)"
+            >Creative Commons Attribution-ShareAlike 4.0 License</a
+          >; additional terms may apply. Wikimedia project logos are trademarks
+          of the Wikimedia Foundation and are used here for identification only
+          — this tool is not endorsed by or affiliated with the Wikimedia
+          Foundation.
+        </div>
+      </footer>
+    </main>
+
+    <!-- ─── SCRIPT ─────────────────────────────────────────────── -->
+    <script>
+      const dz = document.getElementById("dropzone");
+      const fi = document.getElementById("fileInput");
+      const statusEl = document.getElementById("status");
+      const result = document.getElementById("result");
+      const stats = document.getElementById("stats");
+      const issuesEl = document.getElementById("issues");
+      const downloadBtn = document.getElementById("downloadBtn");
+      const previewRow = document.getElementById("preview-row");
+      const previewOrig = document.getElementById("preview-original");
+      const previewCln = document.getElementById("preview-cleaned");
+
+      // State — reset on every new upload
+      let state = {
+        cleanedSvg: null,
+        cleanedName: null,
+        origUrl: null,
+        cleanedUrl: null,
+      };
+
+      // ─── SAMPLE SVGs ───────────────────────────────────────────
+      const SAMPLES = {
+        clean: `<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <title>Clean test SVG</title>
+  <defs>
+    <linearGradient id="g1" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#3366cc"/>
+      <stop offset="100%" stop-color="#8b5cf6"/>
+    </linearGradient>
+  </defs>
+  <rect x="10" y="10" width="180" height="180" rx="20" fill="url(#g1)"/>
+  <circle cx="100" cy="100" r="50" fill="white" opacity="0.85"/>
+  <text x="100" y="110" text-anchor="middle" font-family="sans-serif" font-size="20" fill="#202122">Clean</text>
+</svg>`,
+
+        malicious: `<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+     viewBox="0 0 200 200" width="200" height="200" onload="alert('XSS via onload')">
+  <title>Malicious test SVG</title>
+  <script type="text/javascript">alert('XSS via script tag');<\/script>
+  <foreignObject x="0" y="0" width="200" height="200">
+    <body xmlns="http://www.w3.org/1999/xhtml"><p>Hostile foreignObject</p></body>
+  </foreignObject>
+  <rect x="10" y="10" width="80" height="80" fill="red"
+        onclick="alert('XSS via onclick')" onmouseover="alert('XSS via onmouseover')"/>
+  <a xlink:href="javascript:alert('XSS via href')">
+    <circle cx="150" cy="50" r="30" fill="blue"/>
+  </a>
+  <text x="100" y="180" style="background: expression(alert('XSS'))">Bad style</text>
+  <iframe src="https://evil.example.com/" width="100" height="100"/>
+  <embed src="data:text/html,&lt;script&gt;alert(1)&lt;/script&gt;"/>
+</svg>`,
+
+        mixed: `<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+     viewBox="0 0 300 300" width="300" height="300">
+  <title>Mixed test SVG</title>
+  <defs>
+    <radialGradient id="g1" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#fef3c7"/>
+      <stop offset="100%" stop-color="#f59e0b"/>
+    </radialGradient>
+    <filter id="blur1"><feGaussianBlur stdDeviation="2"/></filter>
+  </defs>
+  <rect x="0" y="0" width="300" height="300" fill="url(#g1)"/>
+  <g filter="url(#blur1)"><circle cx="150" cy="150" r="80" fill="#ef4444"/></g>
+  <customElement x="10" y="10">Unknown element</customElement>
+  <weirdShape points="50,50 100,100 150,50" fill="green"/>
+  <text x="150" y="280" text-anchor="middle" font-size="18">Sample SVG</text>
+  <a href="https://commons.wikimedia.org/"><rect x="220" y="10" width="70" height="30" fill="#3366cc"/>
+    <text x="255" y="30" text-anchor="middle" fill="white" font-size="14">Link OK</text></a>
+  <a href="javascript:void(0)"><text x="50" y="280" fill="purple">Bad link</text></a>
+</svg>`,
+      };
+
+      // ─── ICON BANK ────────────────────────────────────────────
+      function icon(name) {
+        const I = {
+          blocker: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>`,
+          warning: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+      <line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>`,
+          success: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>`,
+          info: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/>
+      <line x1="12" y1="8" x2="12.01" y2="8"/></svg>`,
+        };
+        return I[name] || "";
+      }
+
+      // ─── HELPERS ──────────────────────────────────────────────
+      function clearState() {
+        if (state.origUrl) URL.revokeObjectURL(state.origUrl);
+        if (state.cleanedUrl) URL.revokeObjectURL(state.cleanedUrl);
+        state = {
+          cleanedSvg: null,
+          cleanedName: null,
+          origUrl: null,
+          cleanedUrl: null,
+        };
+        downloadBtn.classList.add("hidden");
+        previewRow.classList.add("hidden");
+        result.classList.add("hidden");
+        stats.innerHTML = "";
+        issuesEl.innerHTML = "";
+        previewOrig.removeAttribute("src");
+        previewCln.removeAttribute("src");
+      }
+
+      function fmtBytes(n) {
+        if (n < 1024) return n + " B";
+        if (n < 1024 * 1024) return (n / 1024).toFixed(1) + " KB";
+        return (n / 1024 / 1024).toFixed(2) + " MB";
+      }
+
+      function buildCleanedFilename(originalName) {
+        // Strip .svg, strip any trailing .cleaned, then re-append .cleaned.svg
+        let base = originalName.replace(/\.svg$/i, "");
+        base = base.replace(/(\.cleaned)+$/i, "");
+        return base + ".cleaned.svg";
+      }
+
+      function statBox(label, value, tone) {
+        const colors = {
+          neutral: "var(--wmf-text)",
+          success: "var(--wmf-success)",
+          warning: "var(--wmf-warning)",
+          error: "var(--wmf-error)",
+        };
+        return `
+    <div class="bg-white rounded-md border p-3" style="border-color: var(--wmf-border-soft);">
+      <div class="text-xs uppercase tracking-wide" style="color: var(--wmf-text-muted);">${label}</div>
+      <div class="text-lg font-semibold mono mt-1" style="color: ${colors[tone || "neutral"]};">${value}</div>
+    </div>`;
+      }
+
+      // ─── UPLOAD HANDLER ───────────────────────────────────────
+      async function processBlob(blob, filename) {
+        clearState();
+        statusEl.textContent = `Sanitising ${filename}…`;
+
+        // Show original preview immediately
+        state.origUrl = URL.createObjectURL(blob);
+        previewOrig.src = state.origUrl;
+
+        const fd = new FormData();
+        fd.append(
+          "file",
+          new File([blob], filename, { type: "image/svg+xml" }),
+        );
+
+        let data;
+        try {
+          const res = await fetch("/sanitize", { method: "POST", body: fd });
+          data = await res.json();
+          if (!res.ok && !data.success && !data.issues) {
+            statusEl.innerHTML = `<span style="color: var(--wmf-error);">Error: ${data.error || "Sanitisation failed"}</span>`;
+            return;
+          }
+        } catch (err) {
+          statusEl.innerHTML = `<span style="color: var(--wmf-error);">Network error: ${err.message}</span>`;
+          return;
+        }
+
+        statusEl.textContent = "";
+        result.classList.remove("hidden");
+
+        if (!data.success) {
+          // Parse failed — no cleaned output, no download
+          stats.innerHTML =
+            statBox("Status", "Parse failed", "error") +
+            statBox("File", filename, "neutral");
+          renderIssues(data.issues || []);
+          previewRow.classList.add("hidden");
+          return;
+        }
+
+        // Success
+        state.cleanedSvg = data.cleaned;
+        state.cleanedName = buildCleanedFilename(filename);
+        const cleanedBlob = new Blob([data.cleaned], { type: "image/svg+xml" });
+        state.cleanedUrl = URL.createObjectURL(cleanedBlob);
+        previewCln.src = state.cleanedUrl;
+
+        const blockerTone = data.blocker_count ? "error" : "success";
+        const warnTone = data.warning_count ? "warning" : "success";
+
+        stats.innerHTML =
+          statBox("Original size", fmtBytes(data.original_size)) +
+          statBox("Cleaned size", fmtBytes(data.cleaned_size)) +
+          statBox("Blockers", data.blocker_count, blockerTone) +
+          statBox("Warnings", data.warning_count, warnTone);
+
+        previewRow.classList.remove("hidden");
+        downloadBtn.classList.remove("hidden");
+        renderIssues(data.issues);
+      }
+
+      function renderIssues(issues) {
+        if (!issues.length) {
+          issuesEl.innerHTML = `
+      <li class="px-5 py-4 flex items-start gap-3" style="color: var(--wmf-success);">
+        <span>${icon("success")}</span>
+        <span>Nothing flagged. This SVG passes the Commons sanitiser cleanly.</span>
+      </li>`;
+          return;
+        }
+        issuesEl.innerHTML = issues
+          .map((i) => {
+            const tone = i.severity === "blocker" ? "error" : "warning";
+            const color =
+              i.severity === "blocker"
+                ? "var(--wmf-error)"
+                : "var(--wmf-warning)";
+            const label = i.severity === "blocker" ? "Blocker" : "Warning";
+            return `
+      <li class="px-5 py-3 flex items-start gap-3 text-sm">
+        <span style="color: ${color};">${icon(tone)}</span>
+        <div class="flex-1">
+          <div class="flex items-center gap-2 mb-0.5">
+            <span class="text-xs font-medium px-1.5 py-0.5 rounded"
+                  style="background: ${tone === "error" ? "#FEE" : "#FEF6E7"}; color: ${color};">
+              ${label}
+            </span>
+            ${i.element ? `<span class="mono text-xs" style="color: var(--wmf-text-muted);">&lt;${i.element}&gt;</span>` : ""}
+          </div>
+          <div style="color: var(--wmf-text);">${i.message}</div>
+        </div>
+      </li>`;
+          })
+          .join("");
+      }
+
+      // ─── EVENTS ───────────────────────────────────────────────
+      dz.addEventListener("click", () => fi.click());
+      fi.addEventListener("change", (e) => {
+        const f = e.target.files[0];
+        if (f) processBlob(f, f.name);
+        fi.value = ""; // allow re-uploading the same file
+      });
+
+      ["dragover", "dragenter"].forEach((ev) =>
+        dz.addEventListener(ev, (e) => {
+          e.preventDefault();
+          dz.style.borderColor = "var(--wmf-blue)";
+          dz.style.background = "var(--wmf-blue-light)";
+        }),
+      );
+      ["dragleave", "drop"].forEach((ev) =>
+        dz.addEventListener(ev, (e) => {
+          e.preventDefault();
+          dz.style.borderColor = "var(--wmf-border)";
+          dz.style.background = "#fff";
+        }),
+      );
+      dz.addEventListener("drop", (e) => {
+        const f = e.dataTransfer.files[0];
+        if (f) processBlob(f, f.name);
+      });
+
+      document.querySelectorAll(".sample-btn").forEach((btn) =>
+        btn.addEventListener("click", () => {
+          const key = btn.dataset.sample;
+          const blob = new Blob([SAMPLES[key]], { type: "image/svg+xml" });
+          processBlob(blob, `${key}-sample.svg`);
+        }),
+      );
+
+      downloadBtn.addEventListener("click", () => {
+        if (!state.cleanedSvg) return;
+        const blob = new Blob([state.cleanedSvg], { type: "image/svg+xml" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = state.cleanedName;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
+      });
+    </script>
+  </body>
+</html>
